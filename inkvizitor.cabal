@@ -1,0 +1,47 @@
+Name:          inkvizitor
+Version:       0.1
+Synopsis:      Manage your debtors
+Description:         
+  Manage your debtors, geocode their addresses and get the money back!
+
+License:       GPL
+License-file:  LICENSE
+Author:        Jan Spacek
+Maintainer:    patek.mail@gmail.com
+Stability:     Alpha
+
+Category:      Inkvizitor
+
+Build-type:    Simple
+
+-- Extra files to be distributed with the package, such as examples or
+-- a README.
+-- Extra-source-files:  
+
+-- Constraint on the version of Cabal needed to build this package.
+Cabal-version:  >=1.2
+
+Executable inkvizitor
+
+  -- .hs or .lhs file containing the Main module.
+  Main-is:       Main.hs
+  
+  -- Modules not exported by this package.
+  Other-modules:       
+    Debtor,
+    Geocode,
+    LocFile
+  
+  Build-depends:       
+    base >= 4 && < 5,
+    time -any,
+    containers -any,
+    json >= 0.4,
+    HTTP >= 4000,
+    wxcore >= 0.12,
+    wx >= 0.12,
+    utf8-string >= 0.3
+
+  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
+  -- Build-tools:         
+  

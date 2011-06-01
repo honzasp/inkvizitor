@@ -1,4 +1,4 @@
-module LocFile (
+module Inkvizitor.LocFile (
     locFile
   ) where
 

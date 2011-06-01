@@ -1,4 +1,4 @@
-module Geocode (
+module Inkvizitor.Geocode (
     Coords(..)
   , Query(..)
   , Location(..)

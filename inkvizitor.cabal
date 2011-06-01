@@ -28,9 +28,15 @@ Executable inkvizitor
   
   -- Modules not exported by this package.
   Other-modules:       
-    Debtor,
-    Geocode,
-    LocFile
+    Inkvizitor.Debtor,
+    Inkvizitor.Geocode,
+    Inkvizitor.LocFile,
+    Inkvizitor.UI.File,
+    Inkvizitor.UI.Gui,
+    Inkvizitor.UI.Main,
+    Inkvizitor.UI.MenuBar,
+    Inkvizitor.UI.StatusBar,
+    Inkvizitor.UI.Tree
   
   Build-depends:       
     base >= 4 && < 5,

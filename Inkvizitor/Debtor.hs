@@ -1,4 +1,4 @@
-module Debtor
+module Inkvizitor.Debtor
   ( Debtor(..)
   , DebtorMap(..)
   , getDebtorsFromJSON

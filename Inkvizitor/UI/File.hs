@@ -32,7 +32,7 @@ loadDebtorsFile g path = do
 
   case mbDebtorMap of
     Just debtorMap -> do
-      varSet (gDebtorsVar g) debtorMap
+      loadDebtorMap g debtorMap
       updateTree g
       setStatus g "Done"
     Nothing ->

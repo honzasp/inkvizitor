@@ -21,14 +21,12 @@ gui = do
   f <- frame [text := "Inkvizitor"] 
   t <- treeCtrl f []
   mb <- menuBarCreate 0
-  dv <- varCreate Map.empty
   sf <- statusField []
 
   let g = Gui {
       gFrame = f
     , gTree = t
     , gMenuBar = mb
-    , gDebtorsVar = dv
     , gStatusField = sf
     }
 

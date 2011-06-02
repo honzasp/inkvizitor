@@ -12,7 +12,6 @@ data Gui = Gui
   { gFrame :: Frame ()
   , gTree :: TreeCtrl ()
   , gMenuBar :: MenuBar ()
-  , gDebtorsVar :: Var DebtorMap
   , gStatusField :: StatusField
   }
 

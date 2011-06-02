@@ -1,0 +1,15 @@
+Inkvizitor
+==========
+
+Inkvizitor helps you manage your debtors. You can export them to HTML tables, 
+geocode their addresses and get your money back!
+
+Building
+--------
+
+You will need cabal to build the package (http://haskell.org/haskellwiki/Cabal).
+
+* First, configure the package using 'cabal configure'
+* Build it by 'cabal build'
+* The executable now should be in 'dist/build/inkvizitor' and it is called
+  'inkvizitor'

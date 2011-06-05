@@ -24,7 +24,7 @@ fileMenu g = do
   open <- menuItem file   [text := "&Open...", help := "Open a file"]
   save <- menuItem file   [text := "&Save", help := "Save a file"]
   saveAs <- menuItem file [text := "Save as...", help := "Save to a new file"]
-  quit <- menuItem file   [text := "&Quit", help := "Close the program"]
+  quit <- menuQuit file   [text := "&Quit", help := "Close the program"]
 
   set (gFrame g)
     [ on (menu open) := onOpen g

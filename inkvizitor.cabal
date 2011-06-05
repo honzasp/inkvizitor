@@ -42,6 +42,7 @@ Executable inkvizitor
     base >= 4 && < 5,
     time -any,
     containers -any,
+    filepath -any,
     json >= 0.4,
     HTTP >= 4000,
     wxcore >= 0.12,

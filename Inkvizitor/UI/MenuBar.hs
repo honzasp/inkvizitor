@@ -46,10 +46,23 @@ fileMenu g = do
           return ()
 
     onSave :: Gui -> IO ()
-    onSave g = return ()
+    onSave g = do
+      mbFileName <- getFileName g
+      case mbFileName of
+        Just fileName ->
+          saveDebtorsFile g fileName
+        Nothing ->
+          onSaveAs g
 
     onSaveAs :: Gui -> IO ()
-    onSaveAs g = return ()
+    onSaveAs g = do
+      mbFileName <- fileSaveDialog (gFrame g) True True "Save debtors as..." 
+        [("Debtors JSON file (*.json, *.js)", ["*.json", "*.js"]), ("Any file", ["*.*"])] "" ""
+      case mbFileName of
+        Just fileName ->
+          saveDebtorsFile g fileName
+        Nothing ->
+          return ()
 
     onQuit :: Gui -> IO ()
     onQuit g = return ()

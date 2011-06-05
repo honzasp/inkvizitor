@@ -2,6 +2,7 @@ module Inkvizitor.UI.Tree
   ( makeTree
   , updateTree
   , loadDebtorMap
+  , makeDebtorMap
   )
 where
 

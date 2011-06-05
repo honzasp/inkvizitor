@@ -2,6 +2,7 @@ module Inkvizitor.Debtor
   ( Debtor(..)
   , DebtorMap(..)
   , getDebtorsFromJSON
+  , getJSONFromDebtors
   )
 where
 
@@ -21,13 +22,17 @@ data Debtor = Debtor
 
 type DebtorMap = Map.Map String [Debtor]
 
-getDebtorsFromJSON :: String -> IO (Either String DebtorMap)
-getDebtorsFromJSON txt = do
+getDebtorsFromJSON :: String -> Either String DebtorMap
+getDebtorsFromJSON txt = 
   case decode txt of
     Ok debtorMap ->
-      return $ Right debtorMap
+      Right debtorMap
     Error msg ->
-      return $ Left msg
+      Left msg
+      
+getJSONFromDebtors :: DebtorMap -> String
+getJSONFromDebtors debtors =
+  encode debtors
 
 instance JSON Debtor where
 

@@ -6,6 +6,7 @@ module Inkvizitor.UI.Main
 import qualified Data.Map as Map
 import Graphics.UI.WX
 import Graphics.UI.WXCore
+import System.IO
 
 import Inkvizitor.Debtor
 import Inkvizitor.UI.File
@@ -18,16 +19,18 @@ main = start gui
 
 gui :: IO ()
 gui = do
-  f <- frame [text := "Inkvizitor"] 
-  t <- treeCtrl f []
-  mb <- menuBarCreate 0
-  sf <- statusField []
+  mainFrame <- frame [text := "Inkvizitor"] 
+  tree <- treeCtrl mainFrame []
+  fileName <- varCreate Nothing
+  menuBar <- menuBarCreate 0
+  statusField <- statusField []
 
   let g = Gui {
-      gFrame = f
-    , gTree = t
-    , gMenuBar = mb
-    , gStatusField = sf
+      gFrame = mainFrame
+    , gTree = tree
+    , gFileName = fileName
+    , gMenuBar = menuBar
+    , gStatusField = statusField
     }
 
   makeTree g

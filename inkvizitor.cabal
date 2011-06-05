@@ -44,6 +44,7 @@ Executable inkvizitor
     containers -any,
     filepath -any,
     json >= 0.4,
+    pretty -any,
     HTTP >= 4000,
     wxcore >= 0.12,
     wx >= 0.12,

@@ -9,6 +9,8 @@ where
 import Data.Time
 import qualified Data.Map as Map
 import Text.JSON
+import Text.JSON.Pretty
+import qualified Text.PrettyPrint.HughesPJ as PP
 
 data Debtor = Debtor
   { getName :: String
@@ -31,8 +33,7 @@ getDebtorsFromJSON txt =
       Left msg
       
 getJSONFromDebtors :: DebtorMap -> String
-getJSONFromDebtors debtors =
-  encode debtors
+getJSONFromDebtors = (++"\n") . PP.render . pp_value . showJSON
 
 instance JSON Debtor where
 

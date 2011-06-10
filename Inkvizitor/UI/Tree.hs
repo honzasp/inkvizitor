@@ -10,11 +10,13 @@ import Control.Applicative
 import Control.Monad
 import Data.Bits
 import qualified Data.Map as Map
+import Foreign
 import Graphics.UI.WX
 import Graphics.UI.WXCore
 import Graphics.UI.WXCore.WxcTypes
 
 import Inkvizitor.Debtor
+import Inkvizitor.UI.Debtor
 import Inkvizitor.UI.Gui
 import Inkvizitor.UI.StatusBar
 
@@ -30,6 +32,7 @@ makeTree g = do
   setItemData g root OtherItem
   set (gTree g) 
     [ on treeEvent := onTreeEvent
+    , on doubleClick := onDoubleClick
     , style := wxTR_HIDE_ROOT .|. wxTR_HAS_BUTTONS .|. wxTR_MULTIPLE .|. wxTR_NO_LINES
     ]
 
@@ -49,13 +52,30 @@ makeTree g = do
                 DebtorItem debtor ->
                   setStatus g $ "Debtor " ++ getName debtor
                 OtherItem ->
-                  return ()
+                  setStatus g $ "?"
             items ->
               setStatus g $ show (length items) ++ " items"
           propagateEvent
         other -> do
           --putStrLn $ show other
           propagateEvent
+
+    onDoubleClick :: Point -> IO ()
+    onDoubleClick point = do
+      alloca $ \flagsPtr -> do
+        item <- treeCtrlHitTest (gTree g) point flagsPtr
+        if treeItemIsOk item
+          then do
+            idata <- getItemData g item
+            case idata of
+              DebtorItem debtor ->
+                showDebtorForm g debtor $ \result -> do
+                  setItemData g item $ DebtorItem result
+                  updateItem g item
+              _ ->
+                return ()
+          else
+            return ()
 
 -- | Set the debtor to client data of the tree item.
 setItemData :: Gui -> TreeItem -> ItemData -> IO ()

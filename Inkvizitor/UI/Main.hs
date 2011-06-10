@@ -19,7 +19,7 @@ main = start gui
 
 gui :: IO ()
 gui = do
-  mainFrame <- frame [text := "Inkvizitor"] 
+  mainFrame <- frame [text := "Inkvizitor", clientSize := sz 600 400] 
   tree <- treeCtrl mainFrame []
   fileName <- varCreate Nothing
   menuBar <- menuBarCreate 0

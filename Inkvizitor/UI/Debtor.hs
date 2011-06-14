@@ -25,38 +25,48 @@ showDebtorForm g debtor onResult = do
   amountInput <- spinCtrl p 0 maxBound [selection := getAmount debtor]
   commentInput <- textCtrl p [text := getComment debtor]
 
-  addressesList <- listCtrl p 
-    [ style := wxLC_EDIT_LABELS .|. wxLC_REPORT .|. wxLC_NO_HEADER .|. wxLC_SINGLE_SEL
-    , columns := [("Address", AlignLeft, 200)]
-    , items := (:[]) <$> getAddresses debtor
+  addrList <- singleListBox p 
+    [ style := wxLB_NEEDED_SB
+    , items := getAddresses debtor
     ]
+
   addrAdd <- button p [text := "Add", tooltip := "Adds a new addres"]
   addrRemove <- button p [text := "Remove", tooltip := "Removes selected address"]
 
-  selectedVar <- variable [value := (Nothing :: Maybe ListIndex)]
-
-  set addressesList [on listEvent := \event -> 
-    case event of
-      ListItemSelected item ->
-        set selectedVar [value := Just item]
-      ListItemDeselected item ->
-        set selectedVar [value := Nothing]
-      other ->
-        propagateEvent
-    ]
+  addrText <- textCtrl p [enabled := False]
+  addrSet <- button p [text := "Set", tooltip := "Sets the address", enabled := False]
 
   set addrAdd [on command := do
-    itemAppend addressesList ["new address..."]
-    appended <- (+(-1)) <$> get addressesList itemCount
-    listCtrlEditLabel addressesList appended
+    itemAppend addrList "New address..."
     ]
 
   set addrRemove [on command := do
-    selected <- get selectedVar value
-    case selected of
-      Just item ->
-        itemDelete addressesList item
-      Nothing ->
+    id <- get addrList selection
+    if id /= (-1)
+      then itemDelete addrList id
+      else return ()
+    ]
+
+  set addrList [on select := do
+    id <- get addrList selection
+    if id /= (-1)
+      then do
+        address <- get addrList (item id)
+        set addrText [text := address , enabled := True]
+        set addrSet [enabled := True]
+      else do
+        set addrText [text := "", enabled := False]
+        set addrSet [enabled := False]
+    propagateEvent
+    ]
+
+  set addrSet [on command := do
+    id <- get addrList selection
+    if id /= (-1)
+      then do
+        address <- get addrText text
+        set addrList [item id := address]
+      else
         return ()
     ]
 
@@ -66,7 +76,7 @@ showDebtorForm g debtor onResult = do
       name <- get nameInput text
       phone <- get phoneInput text
       exNum <- get exNumInput text
-      addresses <- map head <$> get addressesList items
+      addresses <- get addrList items
       amount <- get amountInput selection 
       comment <- get commentInput text
 
@@ -84,7 +94,6 @@ showDebtorForm g debtor onResult = do
     onResult result
     close f
     ]
-
   set cancel [on command := close f]
 
   set f 
@@ -94,12 +103,14 @@ showDebtorForm g debtor onResult = do
           [ [alignLeft $ label "Name: ", hfill $ widget nameInput]
           , [alignLeft $ label "Phone number: ", hfill $ widget phoneInput]
           , [alignLeft $ label "Execution number: ", hfill $ widget exNumInput]
-          , [alignLeft $ label "Addresses: ", hfill $ widget addressesList]
-          , [glue, floatCenter $ row 5 [widget addrAdd, widget addrRemove]]
+          , [alignLeft $ label "Addresses: ", fill . minsize (sz (-1) 150) $ widget addrList]
+          , [glue, hfloatCenter $ row 5 [widget addrAdd, widget addrRemove]]
+          , [glue, fill $ widget addrText]
+          , [glue, hfloatRight $ widget addrSet]
           , [alignLeft $ label "Amount: ", hfill $ widget amountInput]
           , [alignLeft $ label "Comment: ", hfill $ widget commentInput]
           ]
-        , floatBottomRight $ row 5
+        , hfloatRight $ row 5
           [ widget ok, widget cancel ]
         ]
     ]

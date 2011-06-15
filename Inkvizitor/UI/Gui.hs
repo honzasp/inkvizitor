@@ -16,6 +16,7 @@ data Gui = Gui
   { gFrame :: Frame ()
   , gTree :: TreeCtrl ()
   , gFileName :: Var (Maybe FilePath)
+  , gModified :: Var Bool
   , gMenuBar :: MenuBar ()
   , gStatusField :: StatusField
   }

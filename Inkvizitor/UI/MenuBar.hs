@@ -1,5 +1,6 @@
 module Inkvizitor.UI.MenuBar
   ( makeMenuBar
+  , onFileSave
   ) 
 where
 
@@ -28,45 +29,43 @@ fileMenu g = do
   quit <- menuQuit file   [text := "&Quit", help := "Close the program"]
 
   set (gFrame g)
-    [ on (menu open) := onOpen g
-    , on (menu save) := onSave g
-    , on (menu saveAs) := onSaveAs g
-    , on (menu quit) := onQuit g
+    [ on (menu open) := onFileOpen g
+    , on (menu save) := onFileSave g
+    , on (menu saveAs) := onFileSaveAs g
+    , on (menu quit) := onFileQuit g
     ]
 
-  where
+onFileOpen :: Gui -> IO ()
+onFileOpen g = do
+  mbPath <- fileOpenDialog (gFrame g) True True "Open..." 
+    [("Debtors JSON file (*.json, *.js)", ["*.json", "*.js"]), ("Any file", ["*.*"])] "" ""
+  case mbPath of
+    Just path -> 
+      loadDebtorsFile g path
+    Nothing -> 
+      return ()
 
-    onOpen :: Gui -> IO ()
-    onOpen g = do
-      mbPath <- fileOpenDialog (gFrame g) True True "Open..." 
-        [("Debtors JSON file (*.json, *.js)", ["*.json", "*.js"]), ("Any file", ["*.*"])] "" ""
-      case mbPath of
-        Just path -> 
-          loadDebtorsFile g path
-        Nothing -> 
-          return ()
+onFileSave :: Gui -> IO ()
+onFileSave g = do
+  mbFileName <- getFileName g
+  case mbFileName of
+    Just fileName ->
+      saveDebtorsFile g fileName
+    Nothing ->
+      onFileSaveAs g
 
-    onSave :: Gui -> IO ()
-    onSave g = do
-      mbFileName <- getFileName g
-      case mbFileName of
-        Just fileName ->
-          saveDebtorsFile g fileName
-        Nothing ->
-          onSaveAs g
+onFileSaveAs :: Gui -> IO ()
+onFileSaveAs g = do
+  mbFileName <- fileSaveDialog (gFrame g) True True "Save debtors as..." 
+    [("Debtors JSON file (*.json, *.js)", ["*.json", "*.js"]), ("Any file", ["*.*"])] "" ""
+  case mbFileName of
+    Just fileName -> do
+      saveDebtorsFile g fileName
+    Nothing ->
+      return ()
 
-    onSaveAs :: Gui -> IO ()
-    onSaveAs g = do
-      mbFileName <- fileSaveDialog (gFrame g) True True "Save debtors as..." 
-        [("Debtors JSON file (*.json, *.js)", ["*.json", "*.js"]), ("Any file", ["*.*"])] "" ""
-      case mbFileName of
-        Just fileName ->
-          saveDebtorsFile g fileName
-        Nothing ->
-          return ()
-
-    onQuit :: Gui -> IO ()
-    onQuit g = return ()
+onFileQuit :: Gui -> IO ()
+onFileQuit g = return ()
 
 -- | Creates 'Insert' menu
 insertMenu :: Gui -> IO ()
@@ -78,15 +77,13 @@ insertMenu g = do
   folder <- menuItem insert [text := "&Folder...", help := "Insert a new folder"]
 
   set (gFrame g)
-    [ on (menu debtor) := onDebtor g
-    , on (menu folder) := onFolder g
+    [ on (menu debtor) := onInsertDebtor g
+    , on (menu folder) := onInsertFolder g
     ]
 
-  where
+onInsertDebtor :: Gui -> IO ()
+onInsertDebtor = insertDebtor
 
-    onDebtor :: Gui -> IO ()
-    onDebtor = insertDebtor
-    
-    onFolder :: Gui -> IO ()
-    onFolder = insertFolder
-    
+onInsertFolder :: Gui -> IO ()
+onInsertFolder = insertFolder
+

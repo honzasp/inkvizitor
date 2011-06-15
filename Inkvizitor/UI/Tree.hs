@@ -97,10 +97,12 @@ makeTree g = do
           showDebtorForm g debtor $ \result -> do
             setItemData g item $ DebtorItem result
             updateItem g item
+            set (gModified g) [value := True]
         FolderItem folderName ->
           showFolderForm g folderName $ \result -> do
             setItemData g item $ FolderItem result
             updateItem g item
+            set (gModified g) [value := True]
         _ ->
           return ()
 
@@ -114,7 +116,7 @@ insertFolder g =
       then do
         root <- treeCtrlGetRootItem (gTree g)
         createItem g root $ FolderItem newFolder
-        return ()
+        set (gModified g) [value := True]
       else
         errorDialog (gFrame g) "Duplicated folder" "This folder already exists"
 
@@ -138,8 +140,9 @@ insertDebtor g = do
       idata <- getItemData g item
       case idata of
         FolderItem folderName ->
-          showDebtorForm g emptyDebtor $ \newDebtor ->
-            createItem g item (DebtorItem newDebtor) >> return ()
+          showDebtorForm g emptyDebtor $ \newDebtor -> do
+            createItem g item (DebtorItem newDebtor)
+            set (gModified g) [value := True]
         _ ->
           errorDialog (gFrame g) "Can not insert debtor" 
             "Please select folder to insert a new debtor"
@@ -172,6 +175,8 @@ loadDebtorMap g debtorMap = do
 
   sequence_ $ Map.foldWithKey (\f ds a -> (addFolder root f ds) : a) [] debtorMap
   treeCtrlExpand (gTree g) root
+
+  set (gModified g) [value := False]
 
   where
 

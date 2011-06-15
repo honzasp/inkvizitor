@@ -21,7 +21,8 @@ gui :: IO ()
 gui = do
   mainFrame <- frame [text := "Inkvizitor", clientSize := sz 600 400] 
   tree <- treeCtrl mainFrame []
-  fileName <- varCreate Nothing
+  fileName <- variable [value := Nothing]
+  modified <- variable [value := False]
   menuBar <- menuBarCreate 0
   statusField <- statusField []
 
@@ -29,11 +30,30 @@ gui = do
       gFrame = mainFrame
     , gTree = tree
     , gFileName = fileName
+    , gModified = modified
     , gMenuBar = menuBar
     , gStatusField = statusField
     }
 
+  set (gFrame g) [on closing := onAppClose g]
+
   makeTree g
   makeMenuBar g
   makeStatusBar g
+
+  where 
+
+    onAppClose :: Gui -> IO ()
+    onAppClose g = do
+      modified <- get (gModified g) value
+      if modified
+        then do
+          save <- confirmDialog (gFrame g) "Save the file?"
+            "The debtors were modified. Do you want to save changes?" True
+          if save
+            then onFileSave g
+            else return ()
+        else
+          return ()
+      propagateEvent
 

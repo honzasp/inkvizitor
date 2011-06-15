@@ -53,8 +53,9 @@ saveDebtorsFile g path = do
 
   wxcEndBusyCursor
   case result of
-    Right () ->
+    Right () -> do
       setStatus g "Done"
+      set (gModified g) [value := False]
     Left err -> do
       wxcEndBusyCursor
       setStatus g "Error when saving debtors file"

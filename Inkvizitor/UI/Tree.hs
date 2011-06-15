@@ -33,7 +33,13 @@ makeTree g = do
   set (gTree g) 
     [ on treeEvent := onTreeEvent
     , on doubleClick := onDoubleClick
-    , style := wxTR_HIDE_ROOT .|. wxTR_HAS_BUTTONS .|. wxTR_MULTIPLE .|. wxTR_NO_LINES
+    , on keyboard := onKeyboard
+    , style := 
+          wxTR_EDIT_LABELS 
+      .|. wxTR_HIDE_ROOT 
+      .|. wxTR_HAS_BUTTONS 
+      .|. wxTR_MULTIPLE 
+      .|. wxTR_NO_LINES
     ]
 
   where
@@ -57,29 +63,44 @@ makeTree g = do
               setStatus g $ show (length items) ++ " items"
           propagateEvent
         other -> do
-          --putStrLn $ show other
           propagateEvent
 
     onDoubleClick :: Point -> IO ()
-    onDoubleClick point = do
+    onDoubleClick point =
+      hitTest point >>= maybe (return ()) editItem
+
+    onKeyboard :: EventKey -> IO ()
+    onKeyboard eventKey = do
+      case keyKey eventKey of
+        KeyReturn ->
+          hitTest (keyPos eventKey) >>= maybe (return ()) editItem
+        _ ->
+          return ()
+      propagateEvent
+
+    hitTest :: Point -> IO (Maybe TreeItem)
+    hitTest point = do
       alloca $ \flagsPtr -> do
         item <- treeCtrlHitTest (gTree g) point flagsPtr
         if treeItemIsOk item
-          then do
-            idata <- getItemData g item
-            case idata of
-              DebtorItem debtor ->
-                showDebtorForm g debtor $ \result -> do
-                  setItemData g item $ DebtorItem result
-                  updateItem g item
-              FolderItem folderName ->
-                showFolderForm g folderName $ \result -> do
-                  setItemData g item $ FolderItem result
-                  updateItem g item
-              _ ->
-                return ()
-          else
-            return ()
+          then return (Just item)
+          else return Nothing
+
+    -- | Edit an item in the tree (e.g. double-click or Enter key)
+    editItem :: TreeItem -> IO ()
+    editItem item = do
+      idata <- getItemData g item
+      case idata of
+        DebtorItem debtor ->
+          showDebtorForm g debtor $ \result -> do
+            setItemData g item $ DebtorItem result
+            updateItem g item
+        FolderItem folderName ->
+          showFolderForm g folderName $ \result -> do
+            setItemData g item $ FolderItem result
+            updateItem g item
+        _ ->
+          return ()
 
 -- | Shows a form to change name of folder
 showFolderForm :: Gui -> String -> (String -> IO ()) -> IO ()

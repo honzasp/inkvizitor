@@ -72,10 +72,22 @@ makeTree g = do
                 showDebtorForm g debtor $ \result -> do
                   setItemData g item $ DebtorItem result
                   updateItem g item
+              FolderItem folderName ->
+                showFolderForm g folderName $ \result -> do
+                  setItemData g item $ FolderItem result
+                  updateItem g item
               _ ->
                 return ()
           else
             return ()
+
+-- | Shows a form to change name of folder
+showFolderForm :: Gui -> String -> (String -> IO ()) -> IO ()
+showFolderForm g oldName onResult = do
+  newName <- textDialog (gFrame g) "Name of the folder:" "Edit folder" oldName
+  if null newName
+    then onResult oldName
+    else onResult newName
 
 -- | Set the debtor to client data of the tree item.
 setItemData :: Gui -> TreeItem -> ItemData -> IO ()

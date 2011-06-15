@@ -65,7 +65,8 @@ onFileSaveAs g = do
       return ()
 
 onFileQuit :: Gui -> IO ()
-onFileQuit g = return ()
+onFileQuit g = 
+  close (gFrame g)
 
 -- | Creates 'Insert' menu
 insertMenu :: Gui -> IO ()

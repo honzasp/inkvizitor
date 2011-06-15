@@ -8,6 +8,7 @@ import Graphics.UI.WXCore
 
 import Inkvizitor.UI.File
 import Inkvizitor.UI.Gui
+import Inkvizitor.UI.Tree
 
 makeMenuBar :: Gui -> IO ()
 makeMenuBar g = do
@@ -74,7 +75,7 @@ insertMenu g = do
   menuBarAppend (gMenuBar g) insert "&Insert"
 
   debtor <- menuItem insert [text := "&Debtor...", help := "Insert a new debtor"]
-  folder <- menuItem insert [text := "&Folder", help := "Insert a new folder"]
+  folder <- menuItem insert [text := "&Folder...", help := "Insert a new folder"]
 
   set (gFrame g)
     [ on (menu debtor) := onDebtor g
@@ -84,8 +85,8 @@ insertMenu g = do
   where
 
     onDebtor :: Gui -> IO ()
-    onDebtor g = return ()
+    onDebtor = insertDebtor
     
     onFolder :: Gui -> IO ()
-    onFolder g = return ()
+    onFolder = insertFolder
     

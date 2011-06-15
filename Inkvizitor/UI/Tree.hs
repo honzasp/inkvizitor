@@ -1,6 +1,8 @@
 module Inkvizitor.UI.Tree
   ( makeTree
   , updateTree
+  , insertFolder
+  , insertDebtor
   , loadDebtorMap
   , makeDebtorMap
   )
@@ -102,13 +104,48 @@ makeTree g = do
         _ ->
           return ()
 
+-- | Inserts a new folder and shows dialog to edit its name
+--   (menu item "Insert -> Folder")
+insertFolder :: Gui -> IO ()
+insertFolder g =
+  showFolderForm g "" $ \newFolder -> do
+    debtorMap <- makeDebtorMap g
+    if Map.notMember newFolder debtorMap
+      then do
+        root <- treeCtrlGetRootItem (gTree g)
+        createItem g root $ FolderItem newFolder
+        return ()
+      else
+        errorDialog (gFrame g) "Duplicated folder" "This folder already exists"
+
+
 -- | Shows a form to change name of folder
 showFolderForm :: Gui -> String -> (String -> IO ()) -> IO ()
 showFolderForm g oldName onResult = do
   newName <- textDialog (gFrame g) "Name of the folder:" "Edit folder" oldName
   if null newName
-    then onResult oldName
+    then return ()
     else onResult newName
+
+-- | Inserts a new debtor.
+--   If there is just one selected folder item, creates a new debtor, shows a
+--   form and allows user to save it. Otherwise shows a warning
+insertDebtor :: Gui -> IO ()
+insertDebtor g = do
+  selection <- getSelectedItems g
+  case selection of
+    [item] -> do
+      idata <- getItemData g item
+      case idata of
+        FolderItem folderName ->
+          showDebtorForm g emptyDebtor $ \newDebtor ->
+            createItem g item (DebtorItem newDebtor) >> return ()
+        _ ->
+          errorDialog (gFrame g) "Can not insert debtor" 
+            "Please select folder to insert a new debtor"
+    _ -> 
+      errorDialog (gFrame g) "Can not insert debtor"
+        "Please select one folder to insert a new debtor"
 
 -- | Set the debtor to client data of the tree item.
 setItemData :: Gui -> TreeItem -> ItemData -> IO ()

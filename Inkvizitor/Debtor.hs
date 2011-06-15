@@ -1,6 +1,7 @@
 module Inkvizitor.Debtor
   ( Debtor(..)
   , DebtorMap(..)
+  , emptyDebtor
   , getDebtorsFromJSON
   , getJSONFromDebtors
   )
@@ -23,6 +24,16 @@ data Debtor = Debtor
   } deriving (Eq, Show)
 
 type DebtorMap = Map.Map String [Debtor]
+
+emptyDebtor = Debtor
+  { getName = ""
+  , getPhoneNum = ""
+  , getExecutionNum = ""
+  , getAddresses = []
+  , getAmount = 0
+  , getExecutionTime = ""
+  , getComment = ""
+  }
 
 getDebtorsFromJSON :: String -> Either String DebtorMap
 getDebtorsFromJSON txt = 

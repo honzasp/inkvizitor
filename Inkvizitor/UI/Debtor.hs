@@ -23,6 +23,7 @@ showDebtorForm g debtor onResult = do
   phoneInput <- textEntry p [text := getPhoneNum debtor]
   exNumInput <- textEntry p [text := getExecutionNum debtor]
   amountInput <- spinCtrl p 0 maxBound [selection := getAmount debtor]
+  exTimeInput <- textEntry p [text := getExecutionTime debtor]
   commentInput <- textCtrl p [text := getComment debtor]
 
   addrList <- singleListBox p 
@@ -78,6 +79,7 @@ showDebtorForm g debtor onResult = do
       exNum <- get exNumInput text
       addresses <- get addrList items
       amount <- get amountInput selection 
+      exTime <- get exTimeInput text
       comment <- get commentInput text
 
       return $ debtor
@@ -86,6 +88,7 @@ showDebtorForm g debtor onResult = do
         , getExecutionNum = exNum
         , getAddresses = addresses
         , getAmount = amount
+        , getExecutionTime = exTime
         , getComment = comment
         }
 
@@ -108,10 +111,13 @@ showDebtorForm g debtor onResult = do
           , [glue, fill $ widget addrText]
           , [glue, hfloatRight $ widget addrSet]
           , [alignLeft $ label "Amount: ", hfill $ widget amountInput]
+          , [alignLeft $ label "Execution time: ", hfill $ widget exTimeInput]
           , [alignLeft $ label "Comment: ", hfill $ widget commentInput]
           ]
         , hfloatRight $ row 5
           [ widget ok, widget cancel ]
         ]
     ]
+
+  where
 

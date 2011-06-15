@@ -7,8 +7,6 @@ module Inkvizitor.Debtor
 where
 
 import Control.Applicative
-import Data.Fixed
-import Data.Time
 import qualified Data.Map as Map
 import Text.JSON
 import Text.JSON.Pretty
@@ -20,7 +18,7 @@ data Debtor = Debtor
   , getExecutionNum :: String
   , getAddresses :: [String]
   , getAmount :: Int
-  , getExecutionTime :: Maybe LocalTime
+  , getExecutionTime :: String
   , getComment :: String
   } deriving (Eq, Show)
 
@@ -36,29 +34,6 @@ getDebtorsFromJSON txt =
       
 getJSONFromDebtors :: DebtorMap -> String
 getJSONFromDebtors = (++"\n") . PP.render . pp_value . showJSON
-
-instance JSON Day where
-  readJSON val = do
-    (year,month,day) <- readJSON val
-    return $ fromGregorian year month day
-  showJSON =
-    showJSON . toGregorian
-
-instance JSON TimeOfDay where
-  readJSON val = do
-    (hour, min, sec) <- readJSON val
-    case makeTimeOfDayValid hour min (fromIntegral (sec :: Int)) of
-      Just tod -> return tod
-      Nothing -> fail "invalid time of day"
-  showJSON tod =
-    showJSON (todHour tod, todMin tod, (truncate $ todSec tod) :: Int)
-
-instance JSON LocalTime where
-  readJSON val = do
-    (day, tod) <- readJSON val
-    LocalTime <$> readJSON day <*> readJSON tod
-  showJSON loc =
-    showJSON (showJSON $ localDay loc, showJSON $ localTimeOfDay loc)
 
 instance JSON Debtor where
 

@@ -119,5 +119,3 @@ showDebtorForm g debtor onResult = do
         ]
     ]
 
-  where
-
